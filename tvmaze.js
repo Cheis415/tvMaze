@@ -14,28 +14,27 @@ const $searchForm = $("#searchForm");
 
 async function getShowsByTerm(term) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
+  let finalArr = [];
 
   let result = await axios.get(`http://api.tvmaze.com/search/shows?q=${term}`)
-  let resultShow = {};
-  resultShow.id = result.data[0].show.id;
-  resultShow.name = result.data[0].show.name;
-  resultShow.summary = result.data[0].show.summary;
-  resultShow.image = result.data[0].show.image.original;
+  let resultArr = result.data;
+
+  if(resultArr.length > 0) {
+    for (let show of resultArr) {
+      finalArr.push({
+        id: show.show.id,
+        name: show.show.name,
+        summary: show.show.summary,
+        image: show.show.image.original
+      })
+    }
+  }
+  else {
+    alert(`no results for ${term}`)
+  }
      
-console.log(result)   
-console.log(resultShow)
 
-
-
-
-
-
-
-
-
-
-
-  
+  return finalArr;
 }
 
 
@@ -49,7 +48,7 @@ function populateShows(shows) {
         `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg" 
+              src=${show.image} 
               alt="Bletchly Circle San Francisco" 
               class="w-25 mr-3">
            <div class="media-body">
