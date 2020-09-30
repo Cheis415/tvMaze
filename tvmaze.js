@@ -77,12 +77,13 @@ function populateShows(shows) {
       `);
       
       $showsList.append($show);
-      $(".Show-getEpisodes").on("click", async function () {
-        console.log(show.id);
-        await getEpisodesOfShow(show.id);
-      })
     }
     
+    $(".Show-getEpisodes").on("click", function (evt) {
+      let $show = $(evt.target).parents(".Show").first();
+      let showId = $show.data("show-id");
+      getEpisodesOfShow(showId);
+    })
   }
   
 
