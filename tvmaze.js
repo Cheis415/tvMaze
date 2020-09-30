@@ -22,7 +22,6 @@ async function getShowsByTerm(term) {
   
   /** check for no results */
   if(resultArr.length > 0) {
-    console.log(resultArr)
 
     for (let show of resultArr) {
       /** check for empty image */
@@ -75,6 +74,10 @@ function populateShows(shows) {
          </div>  
        </div>
       `);
+      $(".show-getEpisodes").on("click", async function() {
+        console.log(getEpisodesOfShow(id))
+        return await getEpisodesOfShow(id)
+      })
 
     $showsList.append($show);  }
 }
@@ -102,5 +105,8 @@ $searchForm.on("submit", async function (evt) {
  */
 
 async function getEpisodesOfShow(id) {
-  
+ let respoonse = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes.`)
+ console.log(response)
 }
+
+
