@@ -12,20 +12,33 @@ const $searchForm = $("#searchForm");
  *    (if no image URL given by API, put in a default image URL)
  */
 
+
 async function getShowsByTerm(term) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
   let finalArr = [];
 
   let result = await axios.get(`http://api.tvmaze.com/search/shows?q=${term}`)
   let resultArr = result.data;
-
+  
+  /** check for no results */
   if(resultArr.length > 0) {
+    console.log(resultArr)
+
     for (let show of resultArr) {
+      /** check for empty image */
+      let image = "";
+      if (!show.show.image) {
+        image = "https://tinyurl.com/tv-missing";
+      }
+      else {
+        image = show.show.image.original;
+      }
+
       finalArr.push({
         id: show.show.id,
         name: show.show.name,
         summary: show.show.summary,
-        image: show.show.image.original
+        image: image
       })
     }
   }
@@ -44,16 +57,17 @@ function populateShows(shows) {
   $showsList.empty();
 
   for (let show of shows) {
+    let { id, image, name, summary } = show
     const $show = $(
-        `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
+        `<div data-show-id="${id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
-              src=${show.image} 
-              alt="Bletchly Circle San Francisco" 
+              src=${image} 
+              alt=${name} 
               class="w-25 mr-3">
            <div class="media-body">
-             <h5 class="text-primary">${show.name}</h5>
-             <div><small>${show.summary}</small></div>
+             <h5 class="text-primary">${name}</h5>
+             <div><small>${summary}</small></div>
              <button class="btn btn-outline-light btn-sm Show-getEpisodes">
                Episodes
              </button>
@@ -83,30 +97,10 @@ $searchForm.on("submit", async function (evt) {
   await searchForShowAndDisplay();
 });
 
-
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
-
-/** Write a clear docstring for this function... */
-
-// function populateEpisodes(episodes) { }
-//   {
-  //   //   id: 1767,
-  //   //   name: "The Bletchley Circle",
-  //   //   summary:
-  //   //     `<p><b>The Bletchley Circle</b> follows the journey of four ordinary 
-  //   //        women with extraordinary skills that helped to end World War II.</p>
-  //   //      <p>Set in 1952, Susan, Millie, Lucy and Jean have returned to their 
-  //   //        normal lives, modestly setting aside the part they played in 
-  //   //        producing crucial intelligence, which helped the Allies to victory 
-  //   //        and shortened the war. When Susan discovers a hidden code behind an
-  //   //        unsolved murder she is met by skepticism from the police. She 
-  //   //        quickly realises she can only begin to crack the murders and bring
-  //   //        the culprit to justice with her former friends.</p>`,
-  //   //   image:
-  //   //       "http://static.tvmaze.com/uploads/images/medium_portrait/147/369403.jpg"
-  //   // }
-  // ]
+async function getEpisodesOfShow(id) {
+  
+}
