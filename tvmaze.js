@@ -19,9 +19,10 @@ async function getShowsByTerm(term) {
 
   let result = await axios.get(`http://api.tvmaze.com/search/shows?q=${term}`)
   let resultArr = result.data;
-  
+
   /** check for no results */
-  if(resultArr.length > 0) {
+  if (resultArr.length > 0) {
+    console.log(resultArr)
 
     for (let show of resultArr) {
       /** check for empty image */
@@ -44,7 +45,7 @@ async function getShowsByTerm(term) {
   else {
     alert(`no results for ${term}`)
   }
-     
+
 
   return finalArr;
 }
@@ -58,7 +59,7 @@ function populateShows(shows) {
   for (let show of shows) {
     let { id, image, name, summary } = show
     const $show = $(
-        `<div data-show-id="${id}" class="Show col-md-12 col-lg-6 mb-4">
+      `<div data-show-id="${id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
               src=${image} 
@@ -74,14 +75,16 @@ function populateShows(shows) {
          </div>  
        </div>
       `);
-      $(".show-getEpisodes").on("click", async function() {
-        console.log(getEpisodesOfShow(id))
-        return await getEpisodesOfShow(id)
+      
+      $showsList.append($show);
+      $(".Show-getEpisodes").on("click", async function () {
+        console.log(show.id);
+        await getEpisodesOfShow(show.id);
       })
-
-    $showsList.append($show);  }
-}
-
+    }
+    
+  }
+  
 
 /** Handle search form submission: get shows from API and display.
  *    Hide episodes area (that only gets shown if they ask for episodes)
@@ -105,8 +108,35 @@ $searchForm.on("submit", async function (evt) {
  */
 
 async function getEpisodesOfShow(id) {
- let respoonse = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes.`)
- console.log(response)
+  let result = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`);
+  let episodes = result.data;
+  populateEpisodes(episodes)
 }
 
-
+function populateEpisodes(episodes) {
+  $episodesArea.css("display", "block")
+  $episodesArea.empty();
+  $showsList.empty();
+  const $episodeList = $("<ul></ul").css("list-style-type", "none");
+  
+  for (let episode of episodes) {
+    // console.log(episode);
+    let { id, image, name, summary } = episode
+    const $episode = $(
+      `<li data-show-id="${id}" class="Show col-md-12 col-lg-6 mb-4">
+      <div class="media">
+        <img 
+           src=${image.original} 
+           alt=${name} 
+           class="w-25 mr-3">
+        <div class="media-body">
+          <h5 class="text-primary">${name}</h5>
+          <div><small>${summary}</small></div>
+        </div>
+      </div>  
+    </li>
+    `);
+    $episodeList.append($episode)
+  }
+  $episodesArea.append($episodeList);
+}
